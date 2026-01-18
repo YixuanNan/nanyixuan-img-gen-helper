@@ -29,7 +29,7 @@ export function processImgGenTag(message: any): {
       // 将换行替换为 \n，去掉多余空格
       const singleLine = innerContent.replace(/\n/g, '\\n').replace(/\s+/g, ' ').trim();
       return `#[IMG_GEN] ${singleLine} [/IMG_GEN]`;
-    }
+    },
   );
 
   console.log(`处理完成，已将 [IMG_GEN] 标签转为单行`);

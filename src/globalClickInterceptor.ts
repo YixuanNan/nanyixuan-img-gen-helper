@@ -321,19 +321,17 @@ export const globalClickInterceptor = new GlobalClickInterceptor();
 
 /**
  * 快速开始 - 监听所有点击
- * 
+ *
  * @example
  * // 启动并打印所有点击
  * startClickMonitoring();
- * 
+ *
  * // 或带自定义回调
  * startClickMonitoring((info) => {
  *   console.log('点击了:', info.tagName, info.classList);
  * });
  */
-export function startClickMonitoring(
-  callback?: (info: ClickEventInfo) => void
-): void {
+export function startClickMonitoring(callback?: (info: ClickEventInfo) => void): void {
   globalClickInterceptor.start();
 
   // 默认回调 - 打印信息到控制台
@@ -367,27 +365,24 @@ export function stopClickMonitoring(): void {
 
 /**
  * 监听特定选择器的点击
- * 
+ *
  * @example
  * // 监听所有 button 的点击
  * monitorSelector('button', (info) => {
  *   console.log('点击了按钮:', info.text);
  * });
- * 
+ *
  * // 监听特定 class 的点击
  * monitorSelector('.send-btn', (info) => {
  *   console.log('点击了发送按钮');
  * });
  */
-export function monitorSelector(
-  selector: string,
-  callback: (info: ClickEventInfo) => void
-): void {
+export function monitorSelector(selector: string, callback: (info: ClickEventInfo) => void): void {
   if (!globalClickInterceptor.isEnabled()) {
     globalClickInterceptor.start();
   }
 
-  globalClickInterceptor.setFilter((info) => {
+  globalClickInterceptor.setFilter(info => {
     try {
       return info.element.matches(selector);
     } catch {
@@ -400,7 +395,7 @@ export function monitorSelector(
 
 /**
  * 获取点击元素的完整路径信息
- * 
+ *
  * @example
  * const info = getClickPathInfo(element);
  * console.log(info.selectorPath);

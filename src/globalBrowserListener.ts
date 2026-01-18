@@ -118,7 +118,7 @@ class GlobalBrowserListener {
         win.addEventListener(
           eventType,
           (event: Event) => this.handleEvent(event, false),
-          true // 使用捕获阶段
+          true, // 使用捕获阶段
         );
       } catch (error) {
         // 某些事件可能无法监听
@@ -132,7 +132,7 @@ class GlobalBrowserListener {
    */
   private attachIFrameListeners(): void {
     const iframes = document.querySelectorAll('iframe');
-    
+
     iframes.forEach(iframe => {
       try {
         const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
@@ -220,16 +220,14 @@ export const globalBrowserListener = new GlobalBrowserListener();
 
 /**
  * 快速开始 - 监听所有点击事件（包括 iframe）
- * 
+ *
  * @example
  * startGlobalClickMonitoring((info) => {
  *   console.log('点击位置:', info.target);
  *   console.log('来自 iframe:', info.isFromIFrame);
  * });
  */
-export function startGlobalClickMonitoring(
-  callback?: (info: GlobalEventInfo) => void
-): void {
+export function startGlobalClickMonitoring(callback?: (info: GlobalEventInfo) => void): void {
   globalBrowserListener.start();
 
   const defaultCallback = (info: GlobalEventInfo) => {
@@ -259,15 +257,13 @@ export function stopGlobalClickMonitoring(): void {
 
 /**
  * 监听全局键盘事件
- * 
+ *
  * @example
  * startGlobalKeyboardMonitoring((info) => {
  *   console.log('按键事件:', info.event);
  * });
  */
-export function startGlobalKeyboardMonitoring(
-  callback?: (info: GlobalEventInfo) => void
-): void {
+export function startGlobalKeyboardMonitoring(callback?: (info: GlobalEventInfo) => void): void {
   globalBrowserListener.start();
 
   const defaultCallback = (info: GlobalEventInfo) => {
@@ -292,16 +288,14 @@ export function startGlobalKeyboardMonitoring(
 
 /**
  * 监听全局输入事件
- * 
+ *
  * @example
  * startGlobalInputMonitoring((info) => {
  *   const input = info.target as HTMLInputElement;
  *   console.log('输入值:', input.value);
  * });
  */
-export function startGlobalInputMonitoring(
-  callback?: (info: GlobalEventInfo) => void
-): void {
+export function startGlobalInputMonitoring(callback?: (info: GlobalEventInfo) => void): void {
   globalBrowserListener.start();
 
   const defaultCallback = (info: GlobalEventInfo) => {
@@ -324,15 +318,13 @@ export function startGlobalInputMonitoring(
 
 /**
  * 监听全局提交事件
- * 
+ *
  * @example
  * startGlobalFormMonitoring((info) => {
  *   console.log('表单提交:', info.target);
  * });
  */
-export function startGlobalFormMonitoring(
-  callback?: (info: GlobalEventInfo) => void
-): void {
+export function startGlobalFormMonitoring(callback?: (info: GlobalEventInfo) => void): void {
   globalBrowserListener.start();
 
   const defaultCallback = (info: GlobalEventInfo) => {
@@ -353,16 +345,13 @@ export function startGlobalFormMonitoring(
 
 /**
  * 监听特定事件类型
- * 
+ *
  * @example
  * startMonitoringEvent('focus', (info) => {
  *   console.log('获得焦点:', info.target);
  * });
  */
-export function startMonitoringEvent(
-  eventType: string,
-  callback: (info: GlobalEventInfo) => void
-): void {
+export function startMonitoringEvent(eventType: string, callback: (info: GlobalEventInfo) => void): void {
   globalBrowserListener.start();
   globalBrowserListener.on(eventType, callback);
 }
@@ -370,9 +359,6 @@ export function startMonitoringEvent(
 /**
  * 停止监听特定事件
  */
-export function stopMonitoringEvent(
-  eventType: string,
-  callback: (info: GlobalEventInfo) => void
-): void {
+export function stopMonitoringEvent(eventType: string, callback: (info: GlobalEventInfo) => void): void {
   globalBrowserListener.off(eventType, callback);
 }

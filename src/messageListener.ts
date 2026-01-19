@@ -3,12 +3,8 @@
  * 追踪浏览器中调用的所有函数
  */
 
-import {
-  stopGlobalClickMonitoring
-} from './globalBrowserListener';
-import {
-  stopClickMonitoring
-} from './globalClickInterceptor';
+import { stopGlobalClickMonitoring } from './globalBrowserListener';
+import { stopClickMonitoring } from './globalClickInterceptor';
 import { processImgGenTag } from './imgGenProcessor';
 
 // 在加载脚本时执行某个函数
@@ -23,7 +19,6 @@ $(() => {
       checkMessage(msg.message_id);
     });
   });
-
 });
 
 // 处理消息中的 [IMG_GEN] 标签

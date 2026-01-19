@@ -1,6 +1,6 @@
 /**
  * Novel AI 图片生成 - 直接调用 Novel AI API
- * 
+ *
  * 这个模块展示如何直接调用 Novel AI 的图片生成功能
  * 而不仅仅是通过斜杠命令
  */
@@ -8,7 +8,7 @@
 /**
  * 直接调用 Novel AI 生成图片
  * 需要在酒馆中配置 Novel AI API 密钥
- * 
+ *
  * @param prompt - 图片生成提示词
  * @param options - 生成选项
  * @returns 生成的图片URL或base64数据
@@ -16,18 +16,18 @@
 export async function generateImageWithNovelAI(
   prompt: string,
   options?: {
-    negative?: string;           // 负面提示词
+    negative?: string; // 负面提示词
     quality?: 'low' | 'medium' | 'high'; // 质量等级
     resolution?: 'low' | 'medium' | 'high' | 'hd'; // 分辨率
-    seed?: number;               // 随机种子
-    model?: string;              // 使用的模型
-    uncensored?: boolean;        // 是否不过滤内容
-  }
+    seed?: number; // 随机种子
+    model?: string; // 使用的模型
+    uncensored?: boolean; // 是否不过滤内容
+  },
 ): Promise<string | undefined> {
   try {
     // 获取酒馆当前的设置
     const SillyTavern = (window as any).SillyTavern;
-    
+
     if (!SillyTavern) {
       toastr.error('无法访问 SillyTavern API', '错误');
       return undefined;
@@ -41,12 +41,22 @@ export async function generateImageWithNovelAI(
       quality_toggle: options?.quality === 'high',
       ucPreset: 0,
       qualityToggle: options?.quality === 'high',
-      height: options?.resolution === 'hd' ? 1024 : 
-              options?.resolution === 'high' ? 768 :
-              options?.resolution === 'medium' ? 512 : 384,
-      width: options?.resolution === 'hd' ? 1024 :
-             options?.resolution === 'high' ? 768 :
-             options?.resolution === 'medium' ? 512 : 384,
+      height:
+        options?.resolution === 'hd'
+          ? 1024
+          : options?.resolution === 'high'
+            ? 768
+            : options?.resolution === 'medium'
+              ? 512
+              : 384,
+      width:
+        options?.resolution === 'hd'
+          ? 1024
+          : options?.resolution === 'high'
+            ? 768
+            : options?.resolution === 'medium'
+              ? 512
+              : 384,
       scale: 7,
       steps: 28,
       seed: options?.seed || undefined,
@@ -71,7 +81,7 @@ export async function generateImageWithNovelAI(
     }
 
     const data = await response.json();
-    
+
     if (data.images && data.images.length > 0) {
       const imageData = data.images[0];
       toastr.success('Novel AI 图片生成成功！', '成功');
@@ -92,9 +102,9 @@ export async function generateImageWithNovelAI(
  */
 export async function generateCharacterWithNovelAI(
   characterDescription?: string,
-  style?: string
+  style?: string,
 ): Promise<string | undefined> {
-  const prompt = characterDescription 
+  const prompt = characterDescription
     ? `${characterDescription}, ${style || 'anime style'}`
     : `beautiful anime character, ${style || 'anime style'}`;
 
@@ -114,7 +124,7 @@ export async function generateAndAddImageWithNovelAI(
     quality?: 'low' | 'medium' | 'high';
     resolution?: 'low' | 'medium' | 'high' | 'hd';
     addToChat?: boolean;
-  }
+  },
 ): Promise<string | undefined> {
   try {
     toastr.info('正在使用 Novel AI 生成图片...', '生成中');
@@ -132,11 +142,8 @@ export async function generateAndAddImageWithNovelAI(
     // 如果需要添加到聊天
     if (options?.addToChat) {
       const messageContent = `![Novel AI 生成的图片](data:image/png;base64,${imageUrl})`;
-      
-      await createChatMessages(
-        [{ role: 'user', message: messageContent }],
-        { refresh: 'affected' }
-      );
+
+      await createChatMessages([{ role: 'user', message: messageContent }], { refresh: 'affected' });
 
       toastr.success('已将图片添加到聊天', '成功');
     }
@@ -179,22 +186,22 @@ export async function isNovelAIAvailable(): Promise<boolean> {
 
 /**
  * 使用示例
- * 
+ *
  * // 1. 直接生成图片
  * const imageUrl = await generateImageWithNovelAI('beautiful anime girl', {
  *   quality: 'high',
  *   resolution: 'high'
  * });
- * 
+ *
  * // 2. 生成角色肖像
  * const portraitUrl = await generateCharacterWithNovelAI('elf warrior, magical aura');
- * 
+ *
  * // 3. 生成并添加到聊天
  * await generateAndAddImageWithNovelAI('fantasy landscape', {
  *   quality: 'high',
  *   addToChat: true
  * });
- * 
+ *
  * // 4. 在事件中使用
  * eventOn(tavern_events.MESSAGE_UPDATED, async (message_id) => {
  *   if (await isNovelAIAvailable()) {

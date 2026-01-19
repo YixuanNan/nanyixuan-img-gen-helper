@@ -9,12 +9,12 @@ export function isYAML(content: string): boolean {
   }
 
   const trimmedContent = content.trim();
-  
+
   // 检查是否以 YAML 特征开头
   // 1. 以 key: value 格式开始
   // 2. 以 - 开始的列表
   // 3. 以 { 或 [ 开始（JSON）
-  
+
   // 排除 JSON 格式
   if (trimmedContent.startsWith('{') || trimmedContent.startsWith('[')) {
     return false;
@@ -23,7 +23,7 @@ export function isYAML(content: string): boolean {
   // 检查基本的 YAML 特征
   const yamlKeyValueRegex = /^\s*[a-zA-Z_][a-zA-Z0-9_-]*\s*:/m;
   const yamlListRegex = /^\s*-\s+/m;
-  
+
   if (yamlKeyValueRegex.test(trimmedContent) || yamlListRegex.test(trimmedContent)) {
     return true;
   }
@@ -55,7 +55,7 @@ export function validateYAML(content: string): { valid: boolean; error?: string 
 
     for (const line of lines) {
       const trimmedLine = line.trim();
-      
+
       // 跳过空行和注释
       if (!trimmedLine || trimmedLine.startsWith('#')) {
         continue;

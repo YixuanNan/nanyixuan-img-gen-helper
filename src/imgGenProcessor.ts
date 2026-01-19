@@ -52,9 +52,9 @@ export function processImgGenTag(message: any): {
       imgLinks.forEach((link, linkIdx) => {
         // 通过link生成YAML对象
         const yamlObject = {
-          t: "image",
+          t: 'image',
           c: link,
-          time: "02:00"
+          time: '02:00',
         };
         parsedYAML.messages.push(yamlObject);
         console.log(`${LOG_TAG}已将图片链接添加到 messages 中:`, yamlObject);
@@ -62,9 +62,12 @@ export function processImgGenTag(message: any): {
     });
     // 替换content中的<chat_history>标签内容为更新后的YAML字符串，要保留<chat_history>标签的props
     const updatedYAMLString = YAML.stringify(parsedYAML);
-    const propsMatch = replacedContent.match(/<chat_history(\s+[^>]*)?>/)
+    const propsMatch = replacedContent.match(/<chat_history(\s+[^>]*)?>/);
     const props = propsMatch?.[1] || '';
-    replacedContent = replacedContent.replace(/<chat_history(?:\s+[^>]*)?>([\s\S]*?)<\/chat_history>/, `<chat_history${props}>\n${updatedYAMLString}</chat_history>`);
+    replacedContent = replacedContent.replace(
+      /<chat_history(?:\s+[^>]*)?>([\s\S]*?)<\/chat_history>/,
+      `<chat_history${props}>\n${updatedYAMLString}</chat_history>`,
+    );
     console.log(`${LOG_TAG}更新后的消息内容:`, replacedContent);
     return {
       success: true,

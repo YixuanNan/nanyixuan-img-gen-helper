@@ -26,7 +26,7 @@
     "@typescript-eslint/parser": "^8.53.1",
     "autoprefixer": "^10.4.23",
     "chokidar": "^4.0.3",
-    "cors": "^2.8.5",
+    "cors": "^2.8.6",
     "css-loader": "^7.1.2",
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
@@ -103,7 +103,7 @@
     "vue-word-highlighter": "^1.2.6",
     "vue3-pixi": "1.0.0-beta.3",
     "yaml": "^2.8.2",
-    "zod": "^4.3.5"
+    "zod": "^4.3.6"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

@@ -29,7 +29,7 @@ export function injectStreamingMessageContext(): Readonly<StreamingMessageContex
  *     - 将会继承酒馆样式
  *     - 禁止使用 mes_text 类名, 它会让酒馆的编辑楼层功能不可用
  *     - 组件内不能使用 tailwindcss, 因为会影响酒馆其他部分的样式
- *     - 你也许会用到 `@types/function/displayed_message.d.ts` 中的 `formatAsDisplayedMessage` 函数来格式化消息内容
+ *     - 你也许会用到 `@types/function/displayed_message.d.ts` 中的 `formatAsDisplayedMessage` 来格式化消息内容, 并用 `.replaceAll('mes_text', 'mes_streaming')` 来为格式化后内容适配样式
  *
  * @param creator 创建流式界面的组件, 函数内可以用 `.use` 安装依赖或执行其他逻辑
  * @param options 可选选项
@@ -45,17 +45,28 @@ export function mountStreamingMessages(
   const { host = 'iframe', filter, prefix = uuidv4() } = options;
 
   const states: Map<number, { app: App; data: Reactive<StreamingMessageContext>; destroy: () => void }> = new Map();
+  let has_stoped = false;
 
-  const destroyIfInvalid = (message_id: number) => {
+  const destroyIfInvalid = (message_id: number): boolean => {
     const min_message_id = Number($('#chat > .mes').first().attr('mesid'));
-    const max_message_id = getLastMessageId();
-    if (!_.inRange(message_id, min_message_id, max_message_id + 1)) {
+    if (!_.inRange(message_id, min_message_id, SillyTavern.chat.length)) {
       states.get(message_id)?.destroy();
+      return true;
     }
+    return false;
+  };
+
+  const destroyAllInvalid = () => {
+    states.keys().forEach(message_id => destroyIfInvalid(message_id));
   };
 
   const renderOneMessage = async (message_id: number, stream_message?: string) => {
-    destroyIfInvalid(message_id);
+    if (has_stoped) {
+      return;
+    }
+    if (destroyIfInvalid(message_id)) {
+      return;
+    }
 
     const message = stream_message ?? getChatMessages(message_id)[0].message ?? '';
     if (filter && !filter(message_id, message)) {
@@ -65,29 +76,38 @@ export function mountStreamingMessages(
 
     const $message_element = $(`.mes[mesid='${message_id}']`);
 
-    const $mes_text = $message_element.find('.mes_text');
-    $mes_text.addClass('hidden!');
-    const $th_streaming = $message_element.find('.TH-streaming');
-    $th_streaming.addClass('hidden!');
+    const $mes_text = $message_element.find('.mes_text').addClass('hidden!');
+    $message_element.find('.TH-streaming').addClass('hidden!');
 
-    let $mes_streaming = $message_element.find(`#${prefix}-${message_id}`);
-    if ($mes_streaming.length > 0) {
+    let $host = $message_element.find(`#${prefix}-${message_id}`);
+    if ($host.length > 0) {
       const state = states.get(message_id);
       if (state) {
         state.data.message = message;
         state.data.during_streaming = Boolean(stream_message);
-        $mes_streaming.removeClass('hidden!');
         return;
       }
     }
 
     states.get(message_id)?.destroy();
+    $host.remove();
 
-    $mes_streaming.remove();
-    $mes_streaming = (host === 'iframe' ? createScriptIdIframe() : createScriptIdDiv())
-      .addClass(`mes_streaming w-full`)
+    let $mes_streaming = $message_element.find('.mes_streaming');
+    if ($mes_streaming.length === 0) {
+      $mes_streaming = $('<div class="mes_streaming">')
+        .css({
+          'font-weight': '500',
+          'line-height': 'calc(var(--mainFontSize) + .5rem)',
+          'max-width': '100%',
+          'overflow-wrap': 'anywhere',
+          padding: 'calc(var(--mainFontSize) * 0.8) 0 0 0',
+        })
+        .insertAfter($mes_text);
+    }
+
+    $host = (host === 'iframe' ? createScriptIdIframe().addClass('w-full') : createScriptIdDiv())
       .attr('id', `${prefix}-${message_id}`)
-      .insertAfter($mes_text);
+      .appendTo($mes_streaming);
 
     const data = reactive<StreamingMessageContext>({
       prefix,
@@ -98,22 +118,26 @@ export function mountStreamingMessages(
     });
     const app = creator().provide('streaming_message_context', data);
     if (host === 'iframe') {
-      $mes_streaming.on('load', function (this: HTMLIFrameElement) {
+      $host.on('load', function (this: HTMLIFrameElement) {
         teleportStyle(this.contentDocument!.head);
         app.mount(this.contentDocument!.body);
       });
     } else {
-      app.mount($mes_streaming[0]);
+      app.mount($host[0]);
     }
 
     const observer = new MutationObserver(() => {
-      const $edit_textarea = $('#curEditTextarea');
+      const $edit_textarea = $('#chat').find('#curEditTextarea');
       if ($edit_textarea.parent().is($mes_text)) {
         $mes_text.removeClass('hidden!');
-        $mes_streaming.addClass('hidden!');
+        $host.addClass('hidden!');
+      } else if ($edit_textarea.length === 0) {
+        $mes_text.addClass('hidden!');
+        $message_element.find('.TH-streaming').addClass('hidden!');
+        $host.removeClass('hidden!');
       }
     });
-    observer.observe($mes_text[0] as HTMLElement, { childList: true, subtree: true, characterData: true });
+    observer.observe($mes_text[0] as HTMLElement, { childList: true });
 
     states.set(message_id, {
       app,
@@ -127,15 +151,25 @@ export function mountStreamingMessages(
         }
 
         app.unmount();
-        $mes_streaming.remove();
+        $host.remove();
+        if ($mes_streaming.children().length === 0) {
+          $mes_streaming.remove();
+        }
         observer.disconnect();
         states.delete(message_id);
       },
     });
   };
 
-  const renderAllMessage = async () => {
-    states.keys().forEach(message_id => destroyIfInvalid(message_id));
+  const renderAllMessage = async (options: { destroy_all?: boolean; trigger_event?: boolean } = {}) => {
+    if (has_stoped) {
+      return;
+    }
+    if (options.destroy_all) {
+      states.forEach(({ destroy }) => destroy());
+    } else {
+      destroyAllInvalid();
+    }
     await Promise.all(
       $('#chat')
         .children(".mes[is_user='false'][is_system='false']")
@@ -143,40 +177,59 @@ export function mountStreamingMessages(
           const message_id = Number($(node).attr('mesid') ?? 'NaN');
           if (!isNaN(message_id)) {
             await renderOneMessage(message_id);
+            if (options.trigger_event) {
+              eventEmit(tavern_events.CHARACTER_MESSAGE_RENDERED, message_id, 'rerender');
+            }
           }
         }),
     );
   };
 
   const stop_list: Array<() => void> = [];
-  const scopedEventOn = <T extends EventType>(event: T, listener: ListenerType[T]) => {
-    stop_list.push(eventOn(event, errorCatched(listener)).stop);
+  const scopedEventOn = <T extends EventType>(event: T, listener: ListenerType[T], first?: true) => {
+    stop_list.push(
+      first ? eventMakeFirst(event, errorCatched(listener)).stop : eventOn(event, errorCatched(listener)).stop,
+    );
   };
-  scopedEventOn(tavern_events.CHAT_CHANGED, () => renderAllMessage());
-  scopedEventOn(tavern_events.CHARACTER_MESSAGE_RENDERED, message_id => renderOneMessage(message_id));
-  scopedEventOn(tavern_events.MESSAGE_UPDATED, message_id => renderOneMessage(message_id));
-  scopedEventOn(tavern_events.MESSAGE_SWIPED, message_id => {
-    states.get(message_id)?.destroy();
-    renderOneMessage(message_id);
+  scopedEventOn('chatLoaded', () => {
+    renderAllMessage({ destroy_all: true });
   });
+  scopedEventOn(
+    tavern_events.CHARACTER_MESSAGE_RENDERED,
+    message_id => {
+      destroyAllInvalid();
+      renderOneMessage(message_id);
+    },
+    true,
+  );
+  [tavern_events.MESSAGE_EDITED, tavern_events.MESSAGE_DELETED].forEach(event =>
+    scopedEventOn(event, message_id => {
+      destroyAllInvalid();
+      states.get(message_id)?.destroy();
+      renderOneMessage(message_id);
+    }),
+  );
   scopedEventOn(tavern_events.MESSAGE_DELETED, () => setTimeout(errorCatched(renderAllMessage), 1000));
   scopedEventOn(tavern_events.STREAM_TOKEN_RECEIVED, message => {
-    const message_id = Number($('#chat').children('.mes.last_mes').attr('mesid') ?? 'NaN');
-    if (!isNaN(message_id)) {
-      renderOneMessage(message_id, message);
-    }
+    renderOneMessage(Number($('#chat').children('.mes.last_mes').attr('mesid')), message);
   });
 
   if (host === 'div') {
     stop_list.push(teleportStyle().destroy);
   }
-  renderAllMessage();
+  renderAllMessage({ trigger_event: true });
 
   return {
     unmount: () => {
-      $('.mes_text').removeClass('hidden!');
+      const $th_streaming = $('#chat').find('.TH-streaming');
+      if ($th_streaming.length > 0) {
+        $th_streaming.removeClass('hidden!');
+      } else {
+        $('chat').find('.mes_text').removeClass('hidden!');
+      }
       states.forEach(({ destroy }) => destroy());
       stop_list.forEach(stop => stop());
+      has_stoped = true;
     },
   };
 }

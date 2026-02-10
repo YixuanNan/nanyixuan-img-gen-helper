@@ -41,6 +41,12 @@ importers:
       jqueryui:
         specifier: ^1.11.1
         version: 1.11.1
+      json5:
+        specifier: ^2.2.3
+        version: 2.2.3
+      jsonrepair:
+        specifier: ^3.13.2
+        version: 3.13.2
       klona:
         specifier: ^2.0.6
         version: 2.0.6
@@ -153,9 +159,12 @@ importers:
       eslint-webpack-plugin:
         specifier: ^5.0.2
         version: 5.0.2(eslint@9.39.2(jiti@2.6.1))(webpack@5.105.0)
+<<<<<<< HEAD
       express:
         specifier: ^5.2.1
         version: 5.2.1
+=======
+>>>>>>> 0d05c169dd0622cb404331b23687994fbde743ab
       globals:
         specifier: ^16.5.0
         version: 16.5.0
@@ -1495,6 +1504,7 @@ packages:
 
   confbox@0.2.4:
     resolution: {integrity: sha512-ysOGlgTFbN2/Y6Cg3Iye8YKulHw+R2fNXHrgSmXISQdMnomY6eNDprVdW9R5xBguEqI954+S6709UyiO7B+6OQ==}
+<<<<<<< HEAD
 
   content-disposition@1.0.1:
     resolution: {integrity: sha512-oIXISMynqSqm241k6kcQ5UwttDILMK4BiurCfGEREw6+X9jkkpEe5T9FZaApyLGGOnFuyMWZpdolTXMtvEJ08Q==}
@@ -1507,6 +1517,8 @@ packages:
   cookie-signature@1.2.2:
     resolution: {integrity: sha512-D76uU73ulSXrD1UXF4KE2TMxVVwhsnCgfAyTg9k8P6KGZjlXKrOLe4dJQKI3Bxi5wjesZoFXJWElNWBjPZMbhg==}
     engines: {node: '>=6.6.0'}
+=======
+>>>>>>> 0d05c169dd0622cb404331b23687994fbde743ab
 
   cookie@0.7.2:
     resolution: {integrity: sha512-yki5XnKuf750l50uGTllt6kKILY4nQ1eNIQatoXEByZ5dWgnKqbnqmTrBE5B4N7lrMJKQ2ytWMiTO2o0v6Ew/w==}
@@ -1746,9 +1758,12 @@ packages:
   earcut@3.0.2:
     resolution: {integrity: sha512-X7hshQbLyMJ/3RPhyObLARM2sNxxmRALLKx1+NVFFnQ9gKzmCrxm9+uLIAdBcvc8FNLpctqlQ2V6AE92Ol9UDQ==}
 
+<<<<<<< HEAD
   ee-first@1.1.1:
     resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==}
 
+=======
+>>>>>>> 0d05c169dd0622cb404331b23687994fbde743ab
   electron-to-chromium@1.5.286:
     resolution: {integrity: sha512-9tfDXhJ4RKFNerfjdCcZfufu49vg620741MNs26a9+bhLThdB+plgMeou98CAaHu/WATj2iHOOHTp1hWtABj2A==}
 
@@ -2001,10 +2016,13 @@ packages:
     resolution: {integrity: sha512-kVscqXk4OCp68SZ0dkgEKVi6/8ij300KBWTJq32P/dYeWTSwK41WyTxalN1eRmA5Z9UU/LX9D7FWSmV9SAYx6g==}
     engines: {node: '>=0.10.0'}
 
+<<<<<<< HEAD
   etag@1.8.1:
     resolution: {integrity: sha512-aIL5Fx7mawVa300al2BnEE4iNvo1qETxLrPI/o05L7z6go7fCw1J6EQmbK4FmJ2AS7kgVF/KEZWufBfdClMcPg==}
     engines: {node: '>= 0.6'}
 
+=======
+>>>>>>> 0d05c169dd0622cb404331b23687994fbde743ab
   eventemitter3@5.0.4:
     resolution: {integrity: sha512-mlsTRyGaPBjPedk6Bvw+aqbsXDtoAyAzm5MO7JgU+yVRyMQ5O8bD4Kcci7BS85f93veegeCPkL8R4GLClnjLFw==}
 
@@ -2616,6 +2634,10 @@ packages:
 
   jsonfile@6.2.0:
     resolution: {integrity: sha512-FGuPw30AdOIUTRMC2OMRtQV+jkVj2cfPqSeWXv1NEAJ1qZ5zb1X6z1mFhbfOB/iy3ssJCD+3KuZ8r8C3uVFlAg==}
+
+  jsonrepair@3.13.2:
+    resolution: {integrity: sha512-Leuly0nbM4R+S5SVJk3VHfw1oxnlEK9KygdZvfUtEtTawNDyzB4qa1xWTmFt1aeoA7sXZkVTRuIixJ8bAvqVUg==}
+    hasBin: true
 
   keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
@@ -3353,6 +3375,7 @@ packages:
   randombytes@2.1.0:
     resolution: {integrity: sha512-vYl3iOX+4CKUWuxGi9Ukhie6fsqXqS9FE2Zaic4tNFD2N2QQaXOMFbuKK4QmDHC0JO6B1Zp41J0LpT0oR68amQ==}
 
+<<<<<<< HEAD
   range-parser@1.2.1:
     resolution: {integrity: sha512-Hrgsx+orqoygnmhFbKaHE6c296J+HTAQXoxEF6gNupROmmGJRoyzfG3ccAveqCBrwr/2yxQ5BVd/GTl5agOwSg==}
     engines: {node: '>= 0.6'}
@@ -3361,6 +3384,8 @@ packages:
     resolution: {integrity: sha512-K5zQjDllxWkf7Z5xJdV0/B0WTNqx6vxG70zJE4N0kBs4LovmEYWJzQGxC9bS9RAKu3bgM40lrd5zoLJ12MQ5BA==}
     engines: {node: '>= 0.10'}
 
+=======
+>>>>>>> 0d05c169dd0622cb404331b23687994fbde743ab
   react-dom@19.2.4:
     resolution: {integrity: sha512-AXJdLo8kgMbimY95O2aKQqsz2iWi9jMgKJhRBAxECE4IFxfcazB2LmzloIoibJI3C12IlY20+KFaLv+71bUJeQ==}
     peerDependencies:
@@ -5485,12 +5510,15 @@ snapshots:
   confbox@0.1.8: {}
 
   confbox@0.2.4: {}
+<<<<<<< HEAD
 
   content-disposition@1.0.1: {}
 
   content-type@1.0.5: {}
 
   cookie-signature@1.2.2: {}
+=======
+>>>>>>> 0d05c169dd0622cb404331b23687994fbde743ab
 
   cookie@0.7.2: {}
 
@@ -5746,8 +5774,11 @@ snapshots:
 
   earcut@3.0.2: {}
 
+<<<<<<< HEAD
   ee-first@1.1.1: {}
 
+=======
+>>>>>>> 0d05c169dd0622cb404331b23687994fbde743ab
   electron-to-chromium@1.5.286: {}
 
   emoji-regex@8.0.0: {}
@@ -6065,8 +6096,11 @@ snapshots:
 
   esutils@2.0.3: {}
 
+<<<<<<< HEAD
   etag@1.8.1: {}
 
+=======
+>>>>>>> 0d05c169dd0622cb404331b23687994fbde743ab
   eventemitter3@5.0.4: {}
 
   events@3.3.0: {}
@@ -6763,6 +6797,8 @@ snapshots:
       universalify: 2.0.1
     optionalDependencies:
       graceful-fs: 4.2.11
+
+  jsonrepair@3.13.2: {}
 
   keyv@4.5.4:
     dependencies:
@@ -7543,6 +7579,7 @@ snapshots:
     dependencies:
       safe-buffer: 5.2.1
 
+<<<<<<< HEAD
   range-parser@1.2.1: {}
 
   raw-body@3.0.2:
@@ -7554,6 +7591,10 @@ snapshots:
 
   react-dom@19.2.4(react@19.2.4):
     dependencies:
+=======
+  react-dom@19.2.4(react@19.2.4):
+    dependencies:
+>>>>>>> 0d05c169dd0622cb404331b23687994fbde743ab
       react: 19.2.4
       scheduler: 0.27.0
 
@@ -7753,6 +7794,7 @@ snapshots:
   scule@1.3.0: {}
 
   semver@7.7.4: {}
+<<<<<<< HEAD
 
   send@1.2.1:
     dependencies:
@@ -7769,6 +7811,8 @@ snapshots:
       statuses: 2.0.2
     transitivePeerDependencies:
       - supports-color
+=======
+>>>>>>> 0d05c169dd0622cb404331b23687994fbde743ab
 
   serialize-javascript@6.0.2:
     dependencies:
@@ -8252,8 +8296,11 @@ snapshots:
 
   universalify@2.0.1: {}
 
+<<<<<<< HEAD
   unpipe@1.0.0: {}
 
+=======
+>>>>>>> 0d05c169dd0622cb404331b23687994fbde743ab
   unplugin-auto-import@20.3.0(@vueuse/core@13.9.0(vue@3.5.28(typescript@6.0.0-dev.20250807))):
     dependencies:
       local-pkg: 1.1.2

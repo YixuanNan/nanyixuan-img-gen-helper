@@ -1,10 +1,16 @@
 import { compare } from 'compare-versions';
+import { jsonrepair } from 'jsonrepair';
 import { toDotPath } from 'zod/v4/core';
 
 export function assignInplace<T>(destination: T[], new_array: T[]): T[] {
   destination.length = 0;
   destination.push(...new_array);
   return destination;
+}
+
+// 修正 _.merge 对数组的合并逻辑, [1, 2, 3] 和 [4, 5] 合并后变成 [4, 5] 而不是 [4, 5, 3]
+export function correctlyMerge<TObject, TSource>(lhs: TObject, rhs: TSource): TObject & TSource {
+  return _.mergeWith(lhs, rhs, (_lhs, rhs) => (_.isArray(rhs) ? rhs : undefined));
 }
 
 export function chunkBy<T>(array: T[], predicate: (lhs: T, rhs: T) => boolean): T[][] {
@@ -23,24 +29,30 @@ export function chunkBy<T>(array: T[], predicate: (lhs: T, rhs: T) => boolean): 
   return chunks;
 }
 
-export function regexFromString(input: string): RegExp | null {
+export function regexFromString(input: string, replace_macros?: boolean): RegExp | null {
   if (!input) {
     return null;
   }
+  const makeRegex = (pattern: string, flags: string) => {
+    if (replace_macros) {
+      pattern = substitudeMacros(pattern);
+    }
+    return new RegExp(pattern, flags);
+  };
   try {
     const match = input.match(/\/(.+)\/([a-z]*)/i);
     if (!match) {
-      return new RegExp(_.escapeRegExp(input), 'i');
+      return makeRegex(_.escapeRegExp(input), 'i');
     }
     if (match[2] && !/^(?!.*?(.).*?\1)[gmixXsuUAJ]+$/.test(match[3])) {
-      return new RegExp(input, 'i');
+      return makeRegex(input, 'i');
     }
     let flags = match[2] ?? '';
     _.pull(flags, 'g');
     if (flags.indexOf('i') === -1) {
       flags = flags + 'i';
     }
-    return new RegExp(match[1], flags);
+    return makeRegex(match[1], flags);
   } catch {
     return null;
   }
@@ -74,4 +86,29 @@ export function prettifyErrorWithInput(error: z.ZodError) {
       return lines;
     })
     .join('\n');
+}
+
+export function literalYamlify(value: any) {
+  return YAML.stringify(value, { blockQuote: 'literal' });
+}
+
+export function parseString(content: string): any {
+  const json_first = /^[[{]/s.test(content.trimStart());
+  try {
+    return json_first ? JSON.parse(jsonrepair(content)) : YAML.parseDocument(content, { merge: true }).toJS();
+  } catch (e1) {
+    try {
+      return json_first ? YAML.parseDocument(content, { merge: true }).toJS() : JSON.parse(jsonrepair(content));
+    } catch (e2) {
+      const toError = (error: unknown) =>
+        error instanceof Error ? `${error.stack ? error.stack : error.message}` : String(error);
+
+      const error = { 字符串内容: content };
+      _.set(error, json_first ? 'JSON错误信息' : 'YAML错误信息', toError(e1));
+      _.set(error, json_first ? 'YAML错误信息' : 'JSON错误信息', toError(e2));
+      throw new Error(
+        literalYamlify({ [`要解析的字符串不是有效的 ${json_first ? 'JSON/YAML' : 'YAML/JSON'} 格式`]: error }),
+      );
+    }
+  }
 }

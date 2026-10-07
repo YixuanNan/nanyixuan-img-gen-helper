@@ -1,12 +1,9 @@
 ---
-description: 当需要编写脚本时, 你应该参考本文件
-alwaysApply: false
+name: tavern-helper-script
+description: 如果 `xxx` 文件夹中仅有 `index.ts` 文件, 则它是一个酒馆助手脚本. 脚本以无沙盒 iframe 的形式在酒馆后台运行, 没有自己的界面, 只有代码部分可供编写, 其应用场景可以类比网页上的油猴脚本, 但此外它还能通过酒馆助手接口做到监听酒馆事件、操作酒馆变量等功能. 当涉及酒馆助手脚本、需要为酒馆网页增改独立组件或者涉及这些功能时, 你应该参考本 skill.
 ---
-# 脚本
 
-如果 `src/xxx` 文件夹中仅有 `index.ts` 文件, 则它是一个脚本项目.
-
-脚本以无沙盒 iframe 的形式在酒馆后台运行, 没有自己的界面, 只有代码部分可供编写.
+# 酒馆助手脚本
 
 ## jquery
 
@@ -38,7 +35,7 @@ $(() => {
     app.unmount();
     $app.remove();
   });
-})
+});
 ```
 
 这种组件应该尽量参考酒馆网页原有样式; 为了让脚本里为组件设置的额外样式生效, 我们需要使用 `util/script.ts` 中的 `teleportStyle` 函数来将样式复制到酒馆网页的 `<head>` 中.
@@ -59,21 +56,25 @@ $(window).on('pagehide', () => {
 
 ### 组件是独立的，不需要使用酒馆网页的样式
 
-组件可能是单独的悬浮窗、手机样式的对话界面或对酒馆网页的大幅调整, 需要与酒馆网页现有样式隔离, 则应该挂载在 iframe DOM 上. 为此我们使用 `util/script.ts` 中的 `createScriptIdIframe` 函数来创建 iframe DOM, 并将 vue 组件挂载到 iframe 内部的 body 上 (`iframe_element.contentDocument!.body`):
+组件可能是单独的悬浮窗、手机样式的对话界面或对酒馆网页的大幅调整, 需要与酒馆网页现有样式隔离, 则应该挂载在 iframe DOM 上. 为此我们使用 `util/script.ts` 中的 `createScriptIdIframe` 函数来创建 iframe DOM, 并将 vue 组件在 iframe load 完成后挂载到 iframe 内部的 body 上 (`iframe_element.contentDocument!.body`):
 
 ```ts
 $(() => {
   const app = createApp(App).use(createPinia());
 
-  const $app = createScriptIdIframe().appendTo('想要放置的位置');
-  app.mount($app[0].contentDocument!.body);
+  const $app = createScriptIdIframe()
+    .appendTo('想要放置的位置')
+    .on('load', () => {
+      teleportStyle($app[0].contentDocument!.head);
+      app.mount($app[0].contentDocument!.body);
+    });
 
   // 关闭脚本时卸载组件
   $(window).on('pagehide', () => {
     app.unmount();
     $app.remove();
   });
-})
+});
 ```
 
 这种情况应该**优先使用无须自行复制样式的 tailwindcss class**; 否则, 如果有需要复制的样式, 则需要使用 `teleportStyle($app[0].contentDocument!.head)` 函数来复制样式.
@@ -86,7 +87,13 @@ $(() => {
 
 脚本可以在酒馆助手脚本库界面中设置按钮, 用户点击按钮时将会触发对应的事件.
 
-我们可以在代码中这样注册按钮事件:
+我们可以这样添加按钮:
+
+```typescript
+appendInexistentScriptButtons([{ name: '按钮名', visible: true }]);
+```
+
+然后, 可以在代码中这样注册按钮事件:
 
 ```typescript
 eventOn(getButtonEvent('按钮名'), () => {
